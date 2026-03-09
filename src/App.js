@@ -96,12 +96,12 @@ function App() {
       <div className="scanline" />
 
       <div className="main-panel">
-        <div className="topbar">SYS.V.3.0 // REALTIME</div>
+        <div className="topbar">System.V.0.1 // REALTIME</div>
 
         <h1 className="title">SAMBUNG KATA</h1>
 
         <div className="db-badge">
-          ● DB_LINKED: {loading ? "LOADING..." : dbCount.toLocaleString("id-ID")}
+          ● Total Kata: {loading ? "LOADING..." : dbCount.toLocaleString("id-ID")}
         </div>
 
         <div className="welcome">WELCOME, OPERATOR</div>
@@ -195,6 +195,7 @@ function App() {
             <div className="idle-wrap">
               <div className="idle-bracket">[ _ ]</div>
               <div className="idle-text">TYPE TO INITIATE SCAN...</div>
+              <div className="idle-text">KETIK UNTUK INISIALISASI MEMINDAI...</div>
             </div>
           </div>
         ) : filteredWords.length === 0 ? (
