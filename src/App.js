@@ -105,15 +105,16 @@ function App() {
         </div>
 
         <div className="welcome">WELCOME, OPERATOR</div>
-        <a
-  className="operator-tag"
-  href="https://www.tiktok.com/@hahaybro0"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  @Moon
-</a>
-
+        <div style={{ textAlign: "center" }}>
+  <a
+    className="operator-tag"
+    href="https://www.tiktok.com/@hahaybro0"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    @Moon
+  </a>
+</div>
         <div className="game-cover-wrap">
           <img className="game-cover" src="/logo.png" alt="Sambung Kata" />
         </div>

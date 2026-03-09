@@ -93,14 +93,15 @@ body {
 }
 
 .operator-tag {
+  display: block;
   width: fit-content;
-  text-decoration: none;
   margin: 0 auto 24px;
   padding: 10px 16px;
   border: 1px solid #8b7b00;
   color: #ffe600;
   background: rgba(255, 230, 0, 0.08);
   font-weight: bold;
+  text-decoration: none;
   cursor: pointer;
 }
 
