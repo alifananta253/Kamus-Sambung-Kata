@@ -130,16 +130,17 @@ function App() {
 }, [baseFilteredWords, suffixTags, prefix]);
 
   const addSuffixTag = () => {
-    const value = normalizeWord(suffixInput);
-    if (!value) return;
-    if (suffixTags.includes(value)) {
-      setSuffixInput("");
-      return;
-    }
+  const value = normalizeWord(suffixInput);
+  if (!value) return;
 
-    setSuffixTags((prev) => [...prev, value]);
+  if (suffixTags.includes(value)) {
     setSuffixInput("");
-  };
+    return;
+  }
+
+  setSuffixTags((prev) => [...prev, value]);
+  setSuffixInput("");
+};
 
   const removeSuffixTag = (tagToRemove) => {
     setSuffixTags((prev) => prev.filter((tag) => tag !== tagToRemove));
@@ -223,32 +224,40 @@ function App() {
           </div>
 
           <div className="field">
-            <label>AKHIRAN TAG (ENTER UNTUK TAMBAH)</label>
-            <div className="tag-input-wrap">
-              <div className="tag-list">
-                {suffixTags.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    className="suffix-tag"
-                    onClick={() => removeSuffixTag(tag)}
-                    title="Hapus tag"
-                  >
-                    {tag} <span>×</span>
-                  </button>
-                ))}
+  <label>AKHIRAN TAG</label>
+  <div className="tag-input-wrap">
+    <div className="tag-list">
+      {suffixTags.map((tag) => (
+        <button
+          key={tag}
+          type="button"
+          className="suffix-tag"
+          onClick={() => removeSuffixTag(tag)}
+          title="Hapus tag"
+        >
+          {tag} <span>×</span>
+        </button>
+      ))}
 
-                <input
-                  type="text"
-                  value={suffixInput}
-                  onChange={(e) => setSuffixInput(e.target.value)}
-                  onKeyDown={handleSuffixKeyDown}
-                  placeholder="contoh: cy lalu Enter"
-                  className="tag-input"
-                />
-              </div>
-            </div>
-          </div>
+      <input
+        type="text"
+        value={suffixInput}
+        onChange={(e) => setSuffixInput(e.target.value)}
+        onKeyDown={handleSuffixKeyDown}
+        placeholder="contoh: cy"
+        className="tag-input"
+      />
+
+      <button
+        type="button"
+        className="add-tag-btn"
+        onClick={addSuffixTag}
+      >
+        Tambah
+      </button>
+    </div>
+  </div>
+</div>
         </div>
 
         <div className="input-grid small-grid">

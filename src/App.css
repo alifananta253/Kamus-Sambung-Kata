@@ -345,6 +345,33 @@ body {
   opacity: 0.9;
 } 
 
+.add-tag-btn {
+  border: 1px solid #00eaff;
+  background: rgba(0, 234, 255, 0.12);
+  color: #eaffff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  min-height: 42px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.add-tag-btn:hover {
+  box-shadow: 0 0 10px rgba(0, 234, 255, 0.18);
+}
+
+@media (max-width: 768px) {
+  .add-tag-btn {
+    width: 100%;
+  }
+
+  .tag-input {
+    min-width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
   .input-grid,
   .small-grid {
