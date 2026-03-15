@@ -228,6 +228,123 @@ body {
   text-align: center;
 }
 
+.toolbar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.reset-used-btn {
+  border: 1px solid #8ea7b8;
+  background: rgba(10, 20, 36, 0.95);
+  color: #f3f7ff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.reset-used-btn:hover {
+  border-color: #00eaff;
+  box-shadow: 0 0 10px rgba(0, 234, 255, 0.15);
+}
+
+.tag-input-wrap {
+  width: 100%;
+  min-height: 58px;
+  border: 1px solid #0b7ca3;
+  background: rgba(0, 16, 34, 0.95);
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+}
+
+.tag-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.suffix-tag {
+  border: 1px solid #9fb6c7;
+  background: rgba(160, 170, 190, 0.16);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.suffix-tag span {
+  margin-left: 6px;
+  opacity: 0.8;
+}
+
+.tag-input {
+  flex: 1;
+  min-width: 180px;
+  border: none !important;
+  outline: none;
+  background: transparent !important;
+  color: #e7fbff;
+  font-size: 18px;
+  padding: 8px 4px !important;
+  height: auto !important;
+  text-transform: lowercase;
+}
+
+.clickable-word {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.clickable-word:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(0, 234, 255, 0.15);
+}
+
+.used-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.used-word-tag {
+  border: 1px solid #aebdca;
+  background: rgba(210, 220, 235, 0.15);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.used-word-tag:hover {
+  border-color: #00eaff;
+}
+
+.section-header-custom {
+  margin-top: 4px;
+}
+
+.panel-gap {
+  height: 28px;
+}
+
+.empty-mini {
+  color: #8ea7b8;
+  padding: 8px 0 4px;
+}
+
+.fallback-chip {
+  opacity: 0.9;
+}
+
 @media (max-width: 768px) {
   .input-grid,
   .small-grid {
@@ -261,4 +378,5 @@ body {
   letter-spacing: 3px;
   text-align: center;
 }
+
 }
