@@ -343,7 +343,7 @@ body {
 
 .fallback-chip {
   opacity: 0.9;
-}
+} 
 
 @media (max-width: 768px) {
   .input-grid,
