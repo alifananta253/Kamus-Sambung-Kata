@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">sambung-kata</string>
-    <string name="title_activity_main">sambung-kata</string>
-    <string name="package_name">com.sambungkata.alif</string>
-    <string name="custom_url_scheme">com.sambungkata.alif</string>
+    <string name="app_name">Sambung Kata</string>
+    <string name="title_activity_main">Sambung Kata</string>
+    <string name="package_name">com.alifananta.sambungkata</string>
+    <string name="custom_url_scheme">com.alifananta.sambungkata</string>
 </resources>
