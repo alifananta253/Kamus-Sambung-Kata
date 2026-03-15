@@ -390,6 +390,6 @@ function normalizeWord(word) {
     .replace(/^["']|["']$/g, "")
     .replace(/[^a-zA-ZÀ-ÿ0-9_-]/g, "")
     .trim();
-}
+} 
  
 export default App;
