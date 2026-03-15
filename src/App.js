@@ -7,15 +7,18 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   const [prefix, setPrefix] = useState("");
-  const [suffix, setSuffix] = useState("");
+  const [suffixInput, setSuffixInput] = useState("");
+  const [suffixTags, setSuffixTags] = useState([]);
+  const [usedWords, setUsedWords] = useState([]);
+
   const [minLen, setMinLen] = useState("");
   const [maxLen, setMaxLen] = useState("");
 
   useEffect(() => {
     const loadKamus = async () => {
       try {
-        const res = await fetch("/data/kamus.json");
-        if (!res.ok) throw new Error("Gagal load /data/kamus.json");
+        const res = await fetch("./data/kamus.json");
+        if (!res.ok) throw new Error("Gagal load ./data/kamus.json");
 
         const data = await res.json();
         if (!Array.isArray(data)) {
@@ -40,10 +43,24 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const savedUsedWords = localStorage.getItem("usedWords");
+    if (savedUsedWords) {
+      try {
+        setUsedWords(JSON.parse(savedUsedWords));
+      } catch (_) {}
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("usedWords", JSON.stringify(usedWords));
+  }, [usedWords]);
+
+  useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "Escape") {
         setPrefix("");
-        setSuffix("");
+        setSuffixInput("");
+        setSuffixTags([]);
         setMinLen("");
         setMaxLen("");
       }
@@ -56,28 +73,21 @@ function App() {
   const hasSearchInput = useMemo(() => {
     return (
       prefix.trim() !== "" ||
-      suffix.trim() !== "" ||
+      suffixTags.length > 0 ||
       minLen !== "" ||
       maxLen !== ""
     );
-  }, [prefix, suffix, minLen, maxLen]);
+  }, [prefix, suffixTags, minLen, maxLen]);
 
-  const filteredWords = useMemo(() => {
-    if (!hasSearchInput) return [];
-
+  const baseFilteredWords = useMemo(() => {
     let data = allWords;
 
     const p = prefix.trim().toLowerCase();
-    const s = suffix.trim().toLowerCase();
     const min = minLen === "" ? null : Number(minLen);
     const max = maxLen === "" ? null : Number(maxLen);
 
     if (p) {
       data = data.filter((word) => word.startsWith(p));
-    }
-
-    if (s) {
-      data = data.filter((word) => word.endsWith(s));
     }
 
     if (min !== null && !Number.isNaN(min)) {
@@ -88,8 +98,77 @@ function App() {
       data = data.filter((word) => word.length <= max);
     }
 
+    data = data.filter((word) => !usedWords.includes(word));
+
     return data;
-  }, [allWords, prefix, suffix, minLen, maxLen, hasSearchInput]);
+  }, [allWords, prefix, minLen, maxLen, usedWords]);
+
+  const mainWords = useMemo(() => {
+    if (!hasSearchInput) return [];
+
+    if (suffixTags.length === 0) {
+      return baseFilteredWords;
+    }
+
+    return baseFilteredWords.filter((word) =>
+      suffixTags.some((tag) => word.endsWith(tag))
+    );
+  }, [baseFilteredWords, suffixTags, hasSearchInput]);
+
+  const fallbackWords = useMemo(() => {
+  const p = prefix.trim().toLowerCase();
+
+  // jika huruf awal belum diisi → jangan tampilkan apa pun
+  if (p === "") return [];
+
+  // jika tidak ada tag → tidak ada data cadangan
+  if (suffixTags.length === 0) return [];
+
+  return baseFilteredWords.filter(
+    (word) => !suffixTags.some((tag) => word.endsWith(tag))
+  );
+}, [baseFilteredWords, suffixTags, prefix]);
+
+  const addSuffixTag = () => {
+    const value = normalizeWord(suffixInput);
+    if (!value) return;
+    if (suffixTags.includes(value)) {
+      setSuffixInput("");
+      return;
+    }
+
+    setSuffixTags((prev) => [...prev, value]);
+    setSuffixInput("");
+  };
+
+  const removeSuffixTag = (tagToRemove) => {
+    setSuffixTags((prev) => prev.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleSuffixKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === "," || e.key === "Tab") {
+      e.preventDefault();
+      addSuffixTag();
+    }
+
+    if (e.key === "Backspace" && suffixInput === "" && suffixTags.length > 0) {
+      setSuffixTags((prev) => prev.slice(0, -1));
+    }
+  };
+
+  const markAsUsed = (word) => {
+    if (usedWords.includes(word)) return;
+    setUsedWords((prev) => [...prev, word]);
+  };
+
+  const removeUsedWord = (word) => {
+    setUsedWords((prev) => prev.filter((item) => item !== word));
+  };
+
+  const resetUsedWords = () => {
+    setUsedWords([]);
+    localStorage.removeItem("usedWords");
+  };
 
   return (
     <div className="app-shell">
@@ -105,21 +184,32 @@ function App() {
         </div>
 
         <div className="welcome">WELCOME, OPERATOR</div>
+
         <div style={{ textAlign: "center" }}>
-  <a
-    className="operator-tag"
-    href="https://www.tiktok.com/@hahaybro0"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    @Moon
-  </a>
-</div>
-        <div className="game-cover-wrap">
-          <img className="game-cover" src="/logo.png" alt="Sambung Kata" />
+          <a
+            className="operator-tag"
+            href="https://www.tiktok.com/@hahaybro0"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            @Moon
+          </a>
         </div>
 
-        <div className="clear-hint">PRESS [ESC] TO CLEAR INPUT</div>
+        <div className="game-cover-wrap">
+          <img
+            className="game-cover"
+            src={process.env.PUBLIC_URL + "/logo.png"}
+            alt="Sambung Kata"
+          />
+        </div>
+
+        <div className="toolbar-row">
+          <div className="clear-hint">PRESS [ESC] TO CLEAR INPUT</div>
+          <button className="reset-used-btn" onClick={resetUsedWords}>
+            Reset Kata Terpakai
+          </button>
+        </div>
 
         <div className="input-grid">
           <div className="field">
@@ -128,18 +218,36 @@ function App() {
               type="text"
               value={prefix}
               onChange={(e) => setPrefix(e.target.value)}
-              placeholder="contoh: r"
+              placeholder="contoh: ox"
             />
           </div>
 
           <div className="field">
-            <label>AKHIRAN (OPT)</label>
-            <input
-              type="text"
-              value={suffix}
-              onChange={(e) => setSuffix(e.target.value)}
-              placeholder="contoh: if"
-            />
+            <label>AKHIRAN TAG (ENTER UNTUK TAMBAH)</label>
+            <div className="tag-input-wrap">
+              <div className="tag-list">
+                {suffixTags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    className="suffix-tag"
+                    onClick={() => removeSuffixTag(tag)}
+                    title="Hapus tag"
+                  >
+                    {tag} <span>×</span>
+                  </button>
+                ))}
+
+                <input
+                  type="text"
+                  value={suffixInput}
+                  onChange={(e) => setSuffixInput(e.target.value)}
+                  onKeyDown={handleSuffixKeyDown}
+                  placeholder="contoh: cy lalu Enter"
+                  className="tag-input"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -179,15 +287,6 @@ function App() {
       </div>
 
       <div className="output-panel">
-        <div className="output-header">
-          <span>&gt;&gt; DATA_OUTPUT</span>
-          <span className="count-box">
-            {hasSearchInput ? filteredWords.length : 0}
-          </span>
-        </div>
-
-        <div className="divider" />
-
         {loading ? (
           <div className="empty-state">Memuat database kata...</div>
         ) : !hasSearchInput ? (
@@ -198,23 +297,85 @@ function App() {
               <div className="idle-text">KETIK UNTUK INISIALISASI MEMINDAI...</div>
             </div>
           </div>
-        ) : filteredWords.length === 0 ? (
-          <div className="empty-state">
-            <div className="idle-wrap">
-              <div className="idle-bracket">[ _ ]</div>
-              <div className="idle-text">NO MATCH FOUND</div>
-            </div>
-          </div>
         ) : (
-          <div className="result-grid">
-            {filteredWords.map((word, index) => (
-              <div key={`${word}-${index}`} className="word-chip">
-                {word}
+          <>
+            <SectionHeader title="HASIL UTAMA" count={mainWords.length} />
+            <div className="divider" />
+
+            {mainWords.length === 0 ? (
+              <div className="empty-mini">Tidak ada kata yang cocok dengan akhiran tag.</div>
+            ) : (
+              <div className="result-grid">
+                {mainWords.map((word, index) => (
+                  <button
+                    key={`${word}-${index}`}
+                    className="word-chip clickable-word"
+                    onClick={() => markAsUsed(word)}
+                    title="Klik untuk tandai sebagai kata terpakai"
+                  >
+                    {word}
+                  </button>
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+
+            <div className="panel-gap" />
+
+            <SectionHeader
+              title={`KATA TERPAKAI (${usedWords.length})`}
+              count={usedWords.length}
+            />
+            <div className="divider" />
+
+            {usedWords.length === 0 ? (
+              <div className="empty-mini">Belum ada kata terpakai.</div>
+            ) : (
+              <div className="used-tags">
+                {usedWords.map((word) => (
+                  <button
+                    key={word}
+                    className="used-word-tag"
+                    onClick={() => removeUsedWord(word)}
+                    title="Klik untuk mengembalikan kata"
+                  >
+                    {word}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="panel-gap" />
+
+            <SectionHeader title="DATA CADANGAN" count={fallbackWords.length} />
+            <div className="divider" />
+
+            {fallbackWords.length === 0 ? (
+              <div className="empty-mini">
+                {suffixTags.length > 0
+                  ? "Semua kata dari huruf awal sudah masuk ke hasil utama."
+                  : "Tag akhiran belum ditambahkan."}
+              </div>
+            ) : (
+              <div className="result-grid">
+                {fallbackWords.map((word, index) => (
+                  <div key={`${word}-fallback-${index}`} className="word-chip fallback-chip">
+                    {word}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
+    </div>
+  );
+}
+
+function SectionHeader({ title, count }) {
+  return (
+    <div className="output-header section-header-custom">
+      <span>&gt;&gt; {title}</span>
+      <span className="count-box">{count}</span>
     </div>
   );
 }
